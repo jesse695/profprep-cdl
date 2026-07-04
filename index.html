@@ -7,20 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-function switchEndorsement(examType, btn) {
-  window.EXAM_TYPE = examType;
-  // update tab styles
-  document.querySelectorAll('.cdl-tab').forEach(b => {
-    b.style.background = '#fff'; b.style.color = '#333'; b.style.borderColor = '#ccc';
-  });
-  btn.style.background = 'var(--navy)'; btn.style.color = '#fff'; btn.style.borderColor = 'var(--navy)';
-  // reload questions for new endorsement
-  resetProgress();
-  showPanel('practice');
-}
-
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -359,7 +346,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
       <div class="topup-price">$2.99</div>
     </a>
     <a href="https://buy.stripe.com/14A7sE6abdx86X69we6Na1N" class="topup-option">
-      <div class="topup-left"><span class="topup-icon">🏡</span><div><div class="topup-name">3 Simulator Runs</div><div class="topup-desc">Full transaction, all 7 stages</div></div></div>
+      <div class="topup-left"><span class="topup-icon">🏡</span><div><div class="topup-name">3 Simulator Runs</div><div class="topup-desc">Full scenario, all 7 stages</div></div></div>
       <div class="topup-price">$3.99</div>
     </a>
     <button type="button" onclick="closeTopup()" style="width:100%;margin-top:.75rem;padding:.65rem;background:none;border:.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-2);cursor:pointer;font-family:'Source Sans 3',sans-serif">Maybe later</button>
@@ -384,7 +371,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
     <button type="button" class="tab" onclick="switchTab('guide')" id="tab-guide"><i class="ti ti-notebook"></i> Study Guide</button>
     <button type="button" class="tab" onclick="switchTab('tutor')" id="tab-tutor"><i class="ti ti-messages"></i> Tutor</button>
     <button type="button" class="tab" onclick="switchTab('exam')" id="tab-exam"><i class="ti ti-clipboard-list"></i> Practice Exam</button>
-    <button type="button" class="tab" onclick="switchTab('simulator')" id="tab-simulator"><i class="ti ti-home-2"></i> Transaction Sim</button>
+    <button type="button" class="tab" onclick="switchTab('simulator')" id="tab-simulator"><i class="ti ti-truck"></i> Road Sim</button>
     <button type="button" class="tab" onclick="switchTab('vocab')" id="tab-vocab"><i class="ti ti-abc"></i> Vocabulary</button>
     <button type="button" class="tab" onclick="switchTab('ref')" id="tab-ref"><i class="ti ti-books"></i> Quick Reference</button>
     <button type="button" class="tab" onclick="switchTab('statute')" id="tab-statute"><i class="ti ti-scale"></i> Statute Explainer</button>
@@ -418,7 +405,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
       <div class="sec-title" style="font-size:15px;margin-bottom:.75rem">Study Tools</div>
       <div class="mode-grid">
         <div class="mc terra" onclick="switchTab('guide')"><div class="mc-icon">📚</div><div class="mc-title">Study Guide Builder</div><div class="mc-desc">Any topic, national or Federal law</div></div>
-        <div class="mc sun" onclick="switchTab('simulator')"><div class="mc-icon">🏡</div><div class="mc-title">Transaction Simulator</div><div class="mc-desc">Walk into your first deal ready</div></div>
+        <div class="mc sun" onclick="switchTab('simulator')"><div class="mc-icon">🚛</div><div class="mc-title">Road Scenario Simulator</div><div class="mc-desc">Walk into your first run ready</div></div>
         <div class="mc sky" onclick="switchTab('tutor')"><div class="mc-icon">💬</div><div class="mc-title">Socratic Tutor</div><div class="mc-desc">Builds reasoning, not just recall</div></div>
         <div class="mc grass" onclick="switchTab('exam')"><div class="mc-icon">📋</div><div class="mc-title">Practice Exam</div><div class="mc-desc">Static unlimited + adaptive AI</div></div>
         <div class="mc clay" onclick="switchTab('vocab')"><div class="mc-icon">📖</div><div class="mc-title">Vocabulary Engine</div><div class="mc-desc">Terms, confusion pairs, memory hooks</div></div>
@@ -442,17 +429,15 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 
     <!-- STUDY GUIDE -->
     <div class="panel" id="panel-guide">
-      <div class="sh"><div><div class="sec-title">Study Guide Builder</div><div class="sec-sub">AI-generated guides for any real estate topic</div></div><div class="limit-badge" id="guide-limit">10 remaining</div></div>
+      <div class="sh"><div><div class="sec-title">Study Guide Builder</div><div class="sec-sub">AI-generated guides for your selected CDL endorsement</div></div><div class="limit-badge" id="guide-limit">10 remaining</div></div>
       <div class="card">
         <div class="fg">
-          <label>National Topics</label>
+          <label>Topics — <span id="guide-endorsement-label">General Knowledge</span></label>
           <div class="pills" id="guide-pills-nat"></div>
-          <label style="margin-top:.5rem">Federal-Specific Topics <span style="background:rgba(196,98,45,.1);color:var(--terra);font-size:9px;padding:1px 6px;border-radius:3px;font-weight:700;border:.5px solid rgba(196,98,45,.2)">OK LAW</span></label>
-          <div class="pills" id="guide-pills-ok"></div>
         </div>
         <div class="fr">
           <div class="fg" style="margin-bottom:0"><label>Depth</label><select id="guide-depth"><option value="overview">Quick Overview</option><option value="standard" selected>Standard — Exam Ready</option><option value="deep">Deep Dive</option></select></div>
-          <div class="fg" style="margin-bottom:0"><label>Focus</label><select id="guide-focus"><option value="all">Concepts + Application + Law</option><option value="concepts">Core Concepts Only</option><option value="law">Federal Law Focus</option><option value="exam">Exam Tips Focus</option></select></div>
+          <div class="fg" style="margin-bottom:0"><label>Focus</label><select id="guide-focus"><option value="all">Concepts + Application + Regulations</option><option value="concepts">Core Concepts Only</option><option value="law">FMCSA Regulation Focus</option><option value="exam">Exam Tips Focus</option></select></div>
         </div>
         <div style="margin-top:1rem;display:flex;gap:7px">
           <button type="button" class="btn btn-soil" onclick="buildGuide()" id="btn-guide"><i class="ti ti-wand"></i> Build Study Guide</button>
@@ -468,15 +453,15 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
       <div class="chat-wrap">
         <div class="chat-head">
           <div class="hmark" style="width:26px;height:26px;font-size:14px;border-width:1.5px">P</div>
-          <div class="chat-head-title">ProfPrep Real Estate Tutor</div>
+          <div class="chat-head-title">ProfPrep CDL Tutor</div>
           <div class="chat-online"></div>
         </div>
         <div class="chip-bar" id="tutor-chips"></div>
         <div class="chat-msgs" id="chat-msgs">
-          <div class="msg t"><div class="av t">P</div><div class="bubble">Welcome to your Federal Real Estate tutor. I won't just give you answers — I'll ask questions that build the reasoning the PSI exam actually tests.<br><br>What are we working on today?</div></div>
+          <div class="msg t"><div class="av t">P</div><div class="bubble">Welcome to your CDL knowledge test tutor. I won't just give you answers — I'll ask questions that build the reasoning the FMCSA test actually checks for. Patient safety and road safety always come first.<br><br>What are we working on today?</div></div>
         </div>
         <div class="chat-inp-row">
-          <input type="text" id="chat-input" placeholder="Ask about any insurance concept or Federal law..." onkeydown="if(event.key==='Enter')sendChat()">
+          <input type="text" id="chat-input" placeholder="Ask about any CDL topic or FMCSA regulation..." onkeydown="if(event.key==='Enter')sendChat()">
           <button type="button" class="btn btn-soil" onclick="sendChat()" id="btn-chat" style="padding:.55rem .9rem"><i class="ti ti-send"></i></button>
         </div>
       </div>
@@ -488,7 +473,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
       <div class="card" id="exam-config-panel">
         <div class="fr">
           <div class="fg" style="margin-bottom:0"><label>Exam Mode</label><select id="exam-mode" onchange="updateExamMode()"><option value="static">Static Practice — Unlimited</option><option value="adaptive">Adaptive AI Exam — Uses Allocation</option></select></div>
-          <div class="fg" style="margin-bottom:0"><label>Section</label><select id="exam-section"><option value="mixed">Mixed — National + Federal</option><option value="national">National Portion Only</option><option value="oklahoma">Federal Portion Only</option></select></div>
+          <div class="fg" style="margin-bottom:0"><label>Endorsement</label><div style="font-size:13px;padding:.5rem 0;color:var(--text-2)" id="exam-endorsement-label">General Knowledge — set via the tabs above</div></div>
         </div>
         <div class="fg"><label>Topic</label><div class="pills" id="exam-pills"></div></div>
         <div class="fr">
@@ -510,9 +495,9 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 
     <!-- COVERAGE SCENARIO SIMULATOR -->
     <div class="panel" id="panel-simulator">
-      <div class="sh"><div><div class="sec-title">Coverage Scenario Simulator</div><div class="sec-sub">Your first road emergency doesn't feel like your first — walk a complete CDL scenario before the test</div></div><div class="limit-badge" id="sim-limit">10 runs remaining</div></div>
+      <div class="sh"><div><div class="sec-title">Road Scenario Simulator</div><div class="sec-sub">Your first road emergency doesn't feel like your first — walk a complete CDL driving scenario before the test</div></div><div class="limit-badge" id="sim-limit">10 runs remaining</div></div>
       <div class="card" id="sim-config">
-        <div style="background:rgba(196,98,45,.05);border:.5px solid rgba(196,98,45,.15);border-radius:var(--rs);padding:1rem;margin-bottom:1.25rem;font-size:13px;line-height:1.7;color:var(--text-2)"><strong style="color:var(--soil)">Your first road emergency doesn't feel like your first.</strong><br>The simulator puts you in the producer's seat for a complete coverage scenario — from client intake through claim resolution. At every stage you face a real decision with real consequences. FMCSA rules and FMCSA Federal Regulations are called out explicitly where they apply.</div>
+        <div style="background:rgba(196,98,45,.05);border:.5px solid rgba(196,98,45,.15);border-radius:var(--rs);padding:1rem;margin-bottom:1.25rem;font-size:13px;line-height:1.7;color:var(--text-2)"><strong style="color:var(--soil)">Your first road emergency doesn't feel like your first.</strong><br>The simulator puts you behind the wheel for a complete run — from pre-trip inspection through post-trip documentation. At every stage you face a real decision with real consequences, with the applicable FMCSA regulation called out explicitly.</div>
         <div class="fr">
           <div class="fg" style="margin-bottom:0"><label>Scenario Type</label><select id="sim-type"></select></div>
           <div class="fg" style="margin-bottom:0"><label>Complication</label><select id="sim-complications"></select></div>
@@ -531,7 +516,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
       <div class="sh"><div><div class="sec-title">Vocabulary Engine</div><div class="sec-sub">Terms, confusion pairs, applied usage, and memory hooks — always unlimited</div></div></div>
       <div class="card">
         <div class="fr">
-          <div class="fg" style="margin-bottom:0"><label>Category</label><select id="vocab-category" onchange="loadVocabCategory()"><option value="general">General CDL Terms</option><option value="contracts">Vehicle Systems &amp; Components</option><option value="financing">FMCSA Regulations</option><option value="title">HazMat Terms</option><option value="agency">Agency &amp; Representation</option><option value="oklahoma">Federal-Specific Terms</option><option value="confusion">Confusion Pairs</option></select></div>
+          <div class="fg" style="margin-bottom:0"><label>Category</label><select id="vocab-category" onchange="loadVocabCategory()"><option value="general">General CDL Terms</option><option value="vehicle_systems">Vehicle Systems &amp; Components</option><option value="fmcsa">FMCSA Regulations</option><option value="hazmat">HazMat Terms</option><option value="confusion">Confusion Pairs</option></select></div>
           <div class="fg" style="margin-bottom:0"><label>Mode</label><select id="vocab-mode"><option value="flashcard">Flashcard — Reveal &amp; Rate</option></select></div>
         </div>
         <div style="display:flex;gap:7px">
@@ -544,7 +529,7 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 
     <!-- QUICK REFERENCE -->
     <div class="panel" id="panel-ref">
-      <div class="sh"><div><div class="sec-title">Quick Reference</div><div class="sec-sub">PSI Exams exam structure, domain weights, coverage concepts, and Federal law essentials</div></div></div>
+      <div class="sh"><div><div class="sec-title">Quick Reference</div><div class="sec-sub">CDL knowledge test structure, endorsement weights, and FMCSA regulation essentials</div></div></div>
       <div class="ref-grid" id="ref-grid"></div>
     </div>
 
@@ -568,12 +553,40 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 <div class="pb-toast" id="pb-toast">🏆 New Personal Best!</div>
 
 <script>
-const EXAM_TYPE = 'gk_cdl';
+const EXAM_TYPE = 'cdl'; // registered exam_type — matches stripe_product_map + profprep-claude BASE_PROMPTS.cdl
+let currentEndorsement = 'gk_cdl'; // topic filter only, never sent as exam_type
 const ALLOC = { guide:10, tutor:75, adaptive_exam:25, sim:10 };
 
+// NOTE: exam_type sent to the backend is always the registered 'cdl' product (EXAM_TYPE, const above).
+// currentEndorsement only selects which CDL topic set feeds the AI-generation prompts (guide/exam/tutor).
+// This was previously defined inside a <script src="..."> tag, where per the HTML spec inline content is
+// never executed when src is present — the function did not exist in the browser at all until this fix.
+function switchEndorsement(endorsementKey, btn) {
+  currentEndorsement = endorsementKey;
+  document.querySelectorAll('.cdl-tab').forEach(b => {
+    b.style.background = '#fff'; b.style.color = '#333'; b.style.borderColor = '#ccc';
+  });
+  btn.style.background = 'var(--navy)'; btn.style.color = '#fff'; btn.style.borderColor = 'var(--navy)';
+  if (typeof buildUI === 'function' && window.EXAM_CONFIG) buildUI();
+}
+
 // Fallback config if get_config fails
+const ENDORSEMENT_LABELS = {
+  gk_cdl: 'General Knowledge', ab_cdl: 'Air Brakes', cv_cdl: 'Combination Vehicles',
+  hazmat_cdl: 'HazMat', tank_cdl: 'Tank Vehicles', dt_cdl: 'Doubles/Triples',
+  pass_cdl: 'Passenger', sb_cdl: 'School Bus'
+};
 const FALLBACK_CONFIG = {
-  topics: { national: ["Property Insurance Concepts", "Casualty and Liability Insurance", "Commercial Lines Coverage", "Homeowners and Personal Lines", "Auto Insurance", "Marine and Inland Marine", "Surety and Fidelity Bonds", "Insurance Regulation and Law"], state: ['FMCSA Rules & License Law','Disclosure Act','Trust Accounts','Advertising Rules','License Renewal & CE'] },
+  topics: {
+    gk_cdl: ["Vehicle Inspection", "Basic Control", "Shifting Gears", "Backing & Docking", "Visual Search & Communication", "Speed & Space Management", "Hazard Perception", "Emergency Maneuvers", "Skid Control & Recovery", "Hours of Service (FMCSA Part 395)", "Vehicle Systems & Reporting Malfunctions", "Air Brake Basics (non-endorsement)"],
+    ab_cdl: ["Air Brake System Components", "Dual Air Brake Systems", "Inspecting Air Brakes", "Air Brake Pre-Trip Checks", "Low Air Pressure Warnings", "Emergency Braking with Air Systems"],
+    cv_cdl: ["Coupling & Uncoupling", "Combination Vehicle Handling", "Inspecting Combination Vehicles", "Antilock Brakes on Combination Vehicles", "Doubles & Triples Coupling Differences", "Combination Vehicle Skid Control"],
+    hazmat_cdl: ["HazMat Classifications", "Shipping Papers & Placarding", "Loading & Unloading HazMat", "Bulk vs Non-Bulk Packaging", "Emergency Response to HazMat Incidents", "HazMat Security Awareness (49 CFR)"],
+    tank_cdl: ["Tank Vehicle Inspection", "Effects of Liquid Surge", "Weight & Rollover Prevention", "Retest & Bulkhead Requirements", "Emergency Procedures for Tank Vehicles"],
+    dt_cdl: ["Coupling & Uncoupling Multiple Trailers", "Doubles/Triples Handling & Stability", "Inspecting Doubles/Triples Combinations", "Rollover & Off-Tracking Risk"],
+    pass_cdl: ["Passenger Vehicle Inspection", "Loading & Trip Procedures", "Passenger Management & Emergency Evacuation", "Railroad-Highway Crossings", "Use of Brake-Door Interlocks"],
+    sb_cdl: ["School Bus Danger Zones", "Loading & Unloading Procedures", "Railroad Crossing Procedures", "Emergency Exit & Evacuation Drills", "Student Management"]
+  },
   tutor_prompts: {
         'inspection': 'Walk me through the CDL pre-trip vehicle inspection procedure.',
         'air_brakes': 'Explain how air brake systems work and what to check.',
@@ -595,7 +608,7 @@ const FALLBACK_CONFIG = {
     stage_names: ['Pre-Trip Inspection','Departure & En Route','Traffic & Road Conditions','Mechanical Issue','HazMat / Cargo Event','Accident or Emergency','Post-Trip & Documentation'],
     transaction_types: [{value:'highway',label:'Long-Haul Highway Run'},{value:'city',label:'Urban / City Delivery'},{value:'hazmat',label:'HazMat Shipment'},{value:'tanker',label:'Liquid Tanker Run'},{value:'school_bus',label:'School Bus Route'}],
     complications: [{value:'standard',label:'Standard — No major complications'},{value:'brake_failure',label:'Brake Failure'},{value:'tire_blowout',label:'Tire Blowout'},{value:'hos_violation',label:'Hours of Service Issue'},{value:'inspection_flag',label:'DOT Roadside Inspection'},{value:'random',label:'Surprise Me'}] },
-  vocab: { general:[], contracts:[], financing:[], title:[], agency:[], ok:[], confusion:[] },
+  vocab: { general:[], vehicle_systems:[], fmcsa:[], hazmat:[], confusion:[] },
   quick_ref: { categories:[] }
 };
 
@@ -647,17 +660,18 @@ async function loadExamConfig(){
 
 function buildUI(){
   const cfg=window.EXAM_CONFIG;
-  // Topic pills — guide
+  const endLabel=(ENDORSEMENT_LABELS[currentEndorsement]||'General Knowledge');
+  const topicsForEndorsement=(cfg.topics&&cfg.topics[currentEndorsement])||(FALLBACK_CONFIG.topics[currentEndorsement])||[];
+  // Topic pills — guide (scoped to the active endorsement tab, no national/state split — CDL is a single federal test)
   const natPills=document.getElementById('guide-pills-nat');
-  const okPills=document.getElementById('guide-pills-ok');
-  if(natPills&&cfg.topics?.national){natPills.innerHTML=cfg.topics.national.map((t,i)=>`<div class="pill ${i===0?'sel':''}" onclick="selPill(this)">${t}</div>`).join('');}
-  if(okPills&&cfg.topics?.state){okPills.innerHTML=cfg.topics.state.map(t=>`<div class="pill ok-pill" onclick="selPill(this)">${t}</div>`).join('');}
-  // Topic pills — exam
+  const guideLabel=document.getElementById('guide-endorsement-label');
+  if(guideLabel)guideLabel.textContent=endLabel;
+  if(natPills){natPills.innerHTML=topicsForEndorsement.map((t,i)=>`<div class="pill ${i===0?'sel':''}" onclick="selPill(this)">${t}</div>`).join('');}
+  // Topic pills — exam (same endorsement-scoped topic set)
   const examPills=document.getElementById('exam-pills');
-  if(examPills&&cfg.topics){
-    const all=[...(cfg.topics.national||[]),...(cfg.topics.state||[])];
-    examPills.innerHTML=all.map((t,i)=>{const isOk=(cfg.topics.state||[]).includes(t);return`<div class="pill ${i===0?'sel':''} ${isOk?'ok-pill':''}" onclick="selPill(this)">${t}</div>`;}).join('');
-  }
+  const examLabel=document.getElementById('exam-endorsement-label');
+  if(examLabel)examLabel.textContent=endLabel+' — set via the tabs above';
+  if(examPills){examPills.innerHTML=topicsForEndorsement.map((t,i)=>`<div class="pill ${i===0?'sel':''}" onclick="selPill(this)">${t}</div>`).join('');}
   // Tutor chips
   const chips=document.getElementById('tutor-chips');
   if(chips&&cfg.tutor_prompts){chips.innerHTML=Object.keys(cfg.tutor_prompts).map(k=>`<div class="chip" onclick="qp('${k}')">${k.charAt(0).toUpperCase()+k.slice(1)}</div>`).join('');}
@@ -776,25 +790,23 @@ function renderDashboard(res,bests){
   renderBars('topic-bars-national',nat);renderBars('topic-bars-cdl',state);
   const allTopics=[...nat,...state];const weak=allTopics.map(t=>({t,d:topicAgg[t]})).filter(x=>x.d?.total>=3).sort((a,b)=>(a.d.correct/a.d.total)-(b.d.correct/b.d.total));
   if(weak.length&&Math.round((weak[0].d.correct/weak[0].d.total)*100)<65){const w=weak[0];const pct=Math.round((w.d.correct/w.d.total)*100);const isOK=state.includes(w.t);document.getElementById('dash-nudge').innerHTML=`<div class="nudge"><div style="font-size:18px">⚠️</div><div class="nudge-text">Weakest area: <strong>${w.t} (${pct}%)</strong>${isOK?' <span style="background:rgba(196,98,45,.1);color:var(--terra);font-size:9px;padding:1px 5px;border-radius:3px;font-weight:700">OK LAW</span>':''} — below 75% passing threshold.</div><div style="display:flex;gap:6px"><button class="btn btn-soil" style="font-size:11px;padding:.35rem .75rem" onclick="switchTab('exam')">Practice</button><button class="btn btn-outline" style="font-size:11px;padding:.35rem .75rem" onclick="switchTab('tutor')">Tutor</button></div></div>`;}
-  if(sessions.length){const mLabel={study_guide:'Study Guide',tutor:'Tutor',exam:'Practice Exam',simulator:'Transaction Simulator',vocab:'Vocabulary',statute:'Statute Explainer'};const mIcon={study_guide:'ti-notebook',tutor:'ti-messages',exam:'ti-clipboard-list',simulator:'ti-home-2',vocab:'ti-abc',statute:'ti-scale'};document.getElementById('activity-feed').innerHTML='<div class="act-list">'+sessions.slice(0,8).map(s=>`<div class="act-item"><div class="act-icon" style="background:rgba(196,98,45,.08)"><i class="ti ${mIcon[s.mode]||'ti-star'}" style="color:var(--terra)"></i></div><div style="flex:1"><div class="act-t">${mLabel[s.mode]||s.mode}${s.topic?' — '+s.topic:''}</div><div class="act-time">${new Date(s.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</div></div></div>`).join('')+'</div>';}
+  if(sessions.length){const mLabel={study_guide:'Study Guide',tutor:'Tutor',exam:'Practice Exam',simulator:'Road Scenario Simulator',vocab:'Vocabulary',statute:'Statute Explainer'};const mIcon={study_guide:'ti-notebook',tutor:'ti-messages',exam:'ti-clipboard-list',simulator:'ti-home-2',vocab:'ti-abc',statute:'ti-scale'};document.getElementById('activity-feed').innerHTML='<div class="act-list">'+sessions.slice(0,8).map(s=>`<div class="act-item"><div class="act-icon" style="background:rgba(196,98,45,.08)"><i class="ti ${mIcon[s.mode]||'ti-star'}" style="color:var(--terra)"></i></div><div style="flex:1"><div class="act-t">${mLabel[s.mode]||s.mode}${s.topic?' — '+s.topic:''}</div><div class="act-time">${new Date(s.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</div></div></div>`).join('')+'</div>';}
 }
 
 // ── STUDY GUIDE ──────────────────────────────────────────────
 async function buildGuide(){
   if(!canUse('guide')){openTopup("You've used your daily study guide limit. Top up or wait until tomorrow.");return;}
-  const natT=[...document.querySelectorAll('#guide-pills-nat .pill.sel')].map(p=>p.textContent.trim());
-  const okT=[...document.querySelectorAll('#guide-pills-ok .pill.sel')].map(p=>p.textContent.trim());
-  const topics=[...natT,...okT];if(!topics.length){alert('Select at least one topic.');return;}
+  const topics=[...document.querySelectorAll('#guide-pills-nat .pill.sel')].map(p=>p.textContent.trim());
+  if(!topics.length){alert('Select at least one topic.');return;}
   const depth=document.getElementById('guide-depth').value,focus=document.getElementById('guide-focus').value;
+  const endLabel=ENDORSEMENT_LABELS[currentEndorsement]||'General Knowledge';
   const btn=document.getElementById('btn-guide');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Building...';
   const card=document.getElementById('guide-card'),out=document.getElementById('guide-out');
   card.style.display='block';showLoading(out);
   const dMap={overview:'concise overview',standard:'thorough exam-ready study guide',deep:'comprehensive deep dive'};
-  const fMap={all:'Cover core concepts, practical application, and exam tips.',concepts:'Focus on core concepts and definitions.',law:'Focus heavily on Federal statutes, FMCSA rules, and compliance requirements.',exam:'Focus on PSI exam tips, common wrong answers, and what the exam tests.'};
-  const hasOK=okT.length>0;
-  const okInstr=hasOK?' Use <div class="ok-callout"><div class="ok-callout-title">⚖️ Federal Law</div>...</div> for Federal-specific rules.':'';
-  const sys=`You are an expert Federal Real Estate PSI exam prep tutor. Create study guides in HTML: <h3> for sections, <h4> for subsections, <ul><li> for lists, <strong> for key terms, <p> for explanation, <div class="formula-box"> for formulas. End with <div class="alert"><div class="alert-title">🔑 PSI Exam Key Points</div>...</div>. HTML only.${okInstr}`;
-  try{out.innerHTML=await callGenerate(sys,[{role:'user',content:`Create a ${dMap[depth]} for an Federal Real Estate license candidate on: "${topics.join(', ')}". ${fMap[focus]} Distinguish national content from Federal-specific law where relevant.`}],1800);addAllocUsed('guide');await logSession('study_guide',topics.join(', '));}
+  const fMap={all:'Cover core concepts, practical application, and exam tips.',concepts:'Focus on core concepts and definitions.',law:'Focus heavily on FMCSA regulations (49 CFR Parts 383/395/396) and compliance requirements.',exam:'Focus on knowledge-test tips, common wrong answers, and what the test checks for.'};
+  const sys=`You are an expert CDL (Commercial Driver's License) knowledge test prep tutor. Create study guides in HTML: <h3> for sections, <h4> for subsections, <ul><li> for lists, <strong> for key terms, <p> for explanation, <div class="formula-box"> for step-by-step procedures. End with <div class="alert"><div class="alert-title">🔑 Knowledge Test Key Points</div>...</div>. Safety is always the priority. HTML only.`;
+  try{out.innerHTML=await callGenerate(sys,[{role:'user',content:`Create a ${dMap[depth]} for a CDL candidate studying the "${endLabel}" section of the CDL knowledge test, on: "${topics.join(', ')}". ${fMap[focus]} Cite specific FMCSA regulations (e.g. 49 CFR Part 383/395/396) where relevant.`}],1800);addAllocUsed('guide');await logSession('study_guide',topics.join(', '));}
   catch(e){out.innerHTML=`<em style="color:var(--red)">Error: ${e.message}</em>`;}
   btn.disabled=false;btn.innerHTML='<i class="ti ti-wand"></i> Build Study Guide';
 }
@@ -821,18 +833,18 @@ async function startExam(){
   const mode=document.getElementById('exam-mode').value;
   if(mode==='adaptive'&&!canUse('adaptive_exam')){openTopup("You've used your adaptive exam allocation. Top up, or use the unlimited static exam mode.");return;}
   const topics=[...document.querySelectorAll('#exam-pills .pill.sel')].map(p=>p.textContent.trim());if(!topics.length){alert('Select at least one topic.');return;}
-  const section=document.getElementById('exam-section').value,type=document.getElementById('exam-type').value,count=document.getElementById('exam-count').value;
+  const type=document.getElementById('exam-type').value,count=document.getElementById('exam-count').value;
+  const endLabel=ENDORSEMENT_LABELS[currentEndorsement]||'General Knowledge';
   const btn=document.getElementById('btn-exam');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Generating...';
   examScore={correct:0,total:0};answeredQs=new Set();currentQs=[];
   document.getElementById('score-disp').style.display='none';
   const container=document.getElementById('exam-container');showLoading(container);
   document.getElementById('exam-area').style.display='block';document.getElementById('exam-config-panel').style.display='none';document.getElementById('exam-progress').style.width='0%';
-  const sMap={national:'National portion only — property ownership, agency, contracts, financing, fair housing, math, appraisal.',oklahoma:'Federal state portion only — FMCSA rules, Federal license law, disclosure requirements, trust accounts, advertising rules.',mixed:'Mix of national and Federal content. Flag Federal questions with section:"Federal".'};
   const tMap={mixed:'mixed question styles',mcq:'standard multiple choice',scenario:'scenario-based situational questions'};
   const adaptNote=mode==='adaptive'?' ADAPTIVE MODE: target weak areas. Vary difficulty, focus on application over recall.':'';
-  const sys='You are an expert Federal Real Estate PSI exam question writer. Return ONLY valid JSON, no markdown. Format: {"questions":[{"id":1,"section":"National","topic":"Agency","stem":"...","options":["A. ...","B. ...","C. ...","D. ..."],"correct":0,"rationale":"Full explanation.","ok_law_note":"Specific FMCSA rule if applicable — omit if not"}]}. correct is 0-indexed.';
+  const sys='You are an expert CDL (Commercial Driver License) knowledge test question writer, aligned to FMCSA Part 383 test standards. Return ONLY valid JSON, no markdown. Format: {"questions":[{"id":1,"topic":"Air Brakes","stem":"...","options":["A. ...","B. ...","C. ...","D. ..."],"correct":0,"rationale":"Full explanation.","fmcsa_note":"Specific FMCSA regulation citation if applicable — omit if not"}]}. correct is 0-indexed. Safety-first framing.';
   try{
-    const raw=await callGenerate(sys,[{role:'user',content:`Generate exactly ${count} Federal Real Estate license exam questions. ${sMap[section]} Type: ${tMap[type]}.${adaptNote} Topics: ${topics.join(', ')}. PSI exam format, full rationales.`}],2500);
+    const raw=await callGenerate(sys,[{role:'user',content:`Generate exactly ${count} CDL knowledge test questions for the "${endLabel}" section. Type: ${tMap[type]}.${adaptNote} Topics: ${topics.join(', ')}. FMCSA knowledge-test format, full rationales, cite specific 49 CFR sections where relevant.`}],2500);
     const data=JSON.parse(extractJSON(raw));currentQs=data.questions;renderExam(currentQs);
     document.getElementById('score-disp').style.display='flex';updateScore();
     if(mode==='adaptive')addAllocUsed('adaptive_exam');await logSession('exam',topics.join(', '));
@@ -841,10 +853,10 @@ async function startExam(){
 }
 function renderExam(qs){
   const container=document.getElementById('exam-container');container.innerHTML='';
+  const endLabel=ENDORSEMENT_LABELS[currentEndorsement]||'General Knowledge';
   qs.forEach((q,qi)=>{
-    const isOK=q.section==='Federal';
     const oh=q.options.map((o,i)=>`<button type="button" class="opt" id="opt-${qi}-${i}" onclick="toggleMCQ(this,${qi},${i})"><span class="ol">${['A','B','C','D'][i]}</span><span>${o.replace(/^[A-D]\.\s*/,'')}</span></button>`).join('');
-    container.innerHTML+=`<div class="qcard"><div class="qmeta"><span class="qbadge ${isOK?'ok':'nat'}">${isOK?'Federal':'National'}</span><span class="qbadge top">${q.topic||''}</span><span class="qnum">Q${qi+1} of ${qs.length}</span></div><p class="qstem">${q.stem}</p><div class="opts" id="opts-${qi}">${oh}</div><div style="margin-top:.85rem" id="submit-row-${qi}"><button type="button" class="btn btn-soil" onclick="submitAnswer(${qi})" style="font-size:12px;padding:.5rem 1rem"><i class="ti ti-check"></i> Submit Answer</button></div><div class="rationale" id="rat-${qi}"><div class="rat-lbl">Rationale</div><div>${q.rationale}</div>${q.ok_law_note?`<div class="ok-law-note"><i class="ti ti-scale" style="font-size:11px"></i> ${q.ok_law_note}</div>`:''}</div></div>`;
+    container.innerHTML+=`<div class="qcard"><div class="qmeta"><span class="qbadge nat">${endLabel}</span><span class="qbadge top">${q.topic||''}</span><span class="qnum">Q${qi+1} of ${qs.length}</span></div><p class="qstem">${q.stem}</p><div class="opts" id="opts-${qi}">${oh}</div><div style="margin-top:.85rem" id="submit-row-${qi}"><button type="button" class="btn btn-soil" onclick="submitAnswer(${qi})" style="font-size:12px;padding:.5rem 1rem"><i class="ti ti-check"></i> Submit Answer</button></div><div class="rationale" id="rat-${qi}"><div class="rat-lbl">Rationale</div><div>${q.rationale}</div>${q.fmcsa_note?`<div class="ok-law-note"><i class="ti ti-scale" style="font-size:11px"></i> ${q.fmcsa_note}</div>`:''}</div></div>`;
   });
   document.getElementById('btn-more-exam').style.display='flex';
 }
@@ -869,20 +881,20 @@ function resetExam(){document.getElementById('exam-config-panel').style.display=
 
 // ── TRANSACTION SIMULATOR ─────────────────────────────────────
 async function startSimulator(){
-  if(!canUse('sim')){openTopup("You've used your simulator allocation. Top up to run more transactions.");return;}
+  if(!canUse('sim')){openTopup("You've used your simulator allocation. Top up to run more scenarios.");return;}
   const cfg=window.EXAM_CONFIG||FALLBACK_CONFIG;
   const type=document.getElementById('sim-type').value,comp=document.getElementById('sim-complications').value;
   const typeLabel=cfg.simulator?.transaction_types?.find(t=>t.value===type)?.label||type;
   const compLabel=cfg.simulator?.complications?.find(t=>t.value===comp)?.label||comp;
   const stageNames=cfg.simulator?.stage_names||FALLBACK_CONFIG.simulator.stage_names;
-  const btn=document.getElementById('btn-sim');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Building transaction...';
+  const btn=document.getElementById('btn-sim');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Building scenario...';
   simData=null;document.getElementById('sim-area').style.display='block';document.getElementById('sim-config').style.display='none';
   const content=document.getElementById('sim-content');showLoading(content);
-  const sys='You are an expert Federal real estate transaction simulator. Return ONLY valid JSON, no markdown. Create realistic Federal residential transactions with specific FMCSA rule references. Every field must be complete.';
+  const sys='You are an expert CDL road-scenario simulator, aligned to FMCSA testing standards. Return ONLY valid JSON, no markdown. Create a realistic commercial-vehicle driving run with specific FMCSA/CFR regulation references. Every field must be complete, matching the exact schema requested.';
   const prompt=`Create a 7-stage CDL commercial vehicle driving scenario. Scenario type: ${typeLabel}. Include complication: ${compLabel}.
 Return this exact JSON:
 {"title":"descriptive scenario title","vehicle":"vehicle type and load description","route":"route description","stages":[{"name":"stage name","situation":"2-3 sentence situation the driver faces","law_flag":"specific FMCSA regulation or CFR section that applies","question":"What is the correct driver action?","options":["A. option","B. option","C. option","D. option"],"correct":0,"consequence":"Result of correct choice — safety and compliance outcome.","wrong_consequence":"Result of wrong choice — violation or safety consequences.","rationale":"Full explanation referencing FMCSA regulations."}]}
-Include all 7 stages: ${stageNames.join(', ')}. Insert the complication naturally at the appropriate stage. Make the scenario realistic — a real CDL driver could face this situation.`;
+Include all 7 stages: ${stageNames.join(', ')}. Insert the complication naturally at the appropriate stage. Make the scenario realistic — a real CDL driver could face this situation. Use ONLY the "vehicle" and "route" fields to describe context — do not invent unrelated fields.`;
   try{
     const raw=await callGenerate(sys,[{role:'user',content:prompt}],3000);
     simData=JSON.parse(extractJSON(raw));renderSimStage(0);addAllocUsed('sim');await logSession('simulator',simData.title||type);
@@ -904,8 +916,8 @@ function renderSimStage(idx){
   document.getElementById('sim-content').innerHTML=`
     <div class="card">
       <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-3);margin-bottom:.5rem">${simData.title} &middot; Stage ${idx+1} of ${stageNames.length}</div>
-      <div style="font-size:12px;color:var(--text-3);margin-bottom:.75rem">🏠 ${simData.property} &nbsp;|&nbsp; 👤 ${simData.client}</div>
-      ${s.law_flag?`<div class="ok-flag"><i class="ti ti-scale" style="font-size:9px"></i> Federal Law: ${s.law_flag}</div>`:''}
+      <div style="font-size:12px;color:var(--text-3);margin-bottom:.75rem">🚛 ${simData.vehicle||''} &nbsp;|&nbsp; 🛣️ ${simData.route||''}</div>
+      ${s.law_flag?`<div class="ok-flag"><i class="ti ti-scale" style="font-size:9px"></i> FMCSA: ${s.law_flag}</div>`:''}
       <div style="font-size:13px;line-height:1.75;color:var(--text)">${s.situation}</div>
     </div>
     <div class="qcard">
@@ -917,7 +929,7 @@ function renderSimStage(idx){
         <div class="consequence-box bad" id="sim-wrong-${idx}" style="display:none"><div class="consequence-title">⚠ If You Had Chosen Wrong</div><div>${s.wrong_consequence}</div></div>
       </div>
     </div>`;
-  document.getElementById('sim-controls').innerHTML='<button type="button" class="btn btn-outline" onclick="resetSimulator()"><i class="ti ti-refresh"></i> New Transaction</button>';
+  document.getElementById('sim-controls').innerHTML='<button type="button" class="btn btn-outline" onclick="resetSimulator()"><i class="ti ti-refresh"></i> New Scenario</button>';
 }
 function selectSimOpt(btn,si,oi){
   const correct=simData.stages[si].correct;
@@ -928,7 +940,7 @@ function selectSimOpt(btn,si,oi){
   const isLast=si===simData.stages.length-1;
   const controls=document.getElementById('sim-controls');
   if(!isLast){controls.innerHTML+=`<button type="button" class="btn btn-soil" onclick="renderSimStage(${si+1})"><i class="ti ti-arrow-right"></i> Next Stage</button>`;}
-  else{controls.innerHTML+=`<button type="button" class="btn btn-sun" onclick="resetSimulator()">✓ Transaction Complete — Run Another</button>`;}
+  else{controls.innerHTML+=`<button type="button" class="btn btn-sun" onclick="resetSimulator()">✓ Run Complete — Try Another</button>`;}
 }
 function resetSimulator(){simData=null;document.getElementById('sim-config').style.display='block';document.getElementById('sim-area').style.display='none';document.getElementById('sim-stage-bar').innerHTML='';document.getElementById('sim-content').innerHTML='';document.getElementById('sim-controls').innerHTML='';}
 
@@ -976,8 +988,8 @@ async function explainStatute(){
   const btn=document.getElementById('btn-statute');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Looking up...';
   const card=document.getElementById('statute-card'),out=document.getElementById('statute-out');
   card.style.display='block';showLoading(out);
-  const sys=`You are an Federal real estate law expert. Explain Federal statutes and FMCSA rules in plain English for license exam candidates. Use HTML: <h3> for rule names, <span class="statute-ref"> for specific citations, <ul><li> for requirements, <strong> for key terms. Always include: (1) plain English explanation, (2) consequence for violation, (3) practical transaction example. End with <div class="alert"><div class="alert-title">📋 PSI Exam Tip</div>what the exam tests about this rule</div>.`;
-  try{out.innerHTML=await callGenerate(sys,[{role:'user',content:`Explain for an Federal Real Estate license candidate: "${query}". Include specific FMCSA rule numbers or Federal statute citations.`}],1200);await logSession('statute',query.substring(0,50));}
+  const sys=`You are an FMCSA regulations expert. Explain FMCSA/CFR rules in plain English for CDL knowledge test candidates. Use HTML: <h3> for rule names, <span class="statute-ref"> for specific citations, <ul><li> for requirements, <strong> for key terms. Always include: (1) plain English explanation, (2) consequence for violation, (3) practical on-the-road example. End with <div class="alert"><div class="alert-title">📋 Knowledge Test Tip</div>what the test checks for on this rule</div>.`;
+  try{out.innerHTML=await callGenerate(sys,[{role:'user',content:`Explain for a CDL knowledge test candidate: "${query}". Include specific FMCSA regulation numbers or 49 CFR citations.`}],1200);await logSession('statute',query.substring(0,50));}
   catch(e){out.innerHTML=`<em style="color:var(--red)">Error: ${e.message}</em>`;}
   btn.disabled=false;btn.innerHTML='<i class="ti ti-scale"></i> Explain This';
 }
