@@ -553,16 +553,23 @@ textarea{resize:vertical;min-height:80px;line-height:1.6}
 <div class="pb-toast" id="pb-toast">🏆 New Personal Best!</div>
 
 <script>
-const EXAM_TYPE = 'cdl'; // registered exam_type — matches stripe_product_map + profprep-claude BASE_PROMPTS.cdl
-let currentEndorsement = 'gk_cdl'; // topic filter only, never sent as exam_type
+let EXAM_TYPE = 'gk_cdl'; // registered exam_type — now one of 8 individually-registered CDL
+// sub-category exam_types rows (gk_cdl/ab_cdl/cv_cdl/dt_cdl/pass_cdl/sb_cdl/tank_cdl/hazmat_cdl),
+// each with its own real question count + passing score, verified 2026-07-06. Replaces the prior
+// single umbrella 'cdl' exam_type, which was never actually reachable: get_practice_questions
+// filtered question_bank by the literal exam_type sent (always 'cdl'), but every question_bank row
+// uses the fine-grained sub-category values -- so no CDL question was ever servable. The umbrella
+// exam_types row is now deactivated (is_active:false), not deleted.
+let currentEndorsement = 'gk_cdl'; // kept as an alias of EXAM_TYPE for readability at call sites below
 const ALLOC = { guide:10, tutor:75, adaptive_exam:25, sim:10 };
 
-// NOTE: exam_type sent to the backend is always the registered 'cdl' product (EXAM_TYPE, const above).
-// currentEndorsement only selects which CDL topic set feeds the AI-generation prompts (guide/exam/tutor).
-// This was previously defined inside a <script src="..."> tag, where per the HTML spec inline content is
-// never executed when src is present — the function did not exist in the browser at all until this fix.
+// exam_type sent to the backend is now the specific selected CDL endorsement (EXAM_TYPE, above),
+// kept in sync with the active tab by switchEndorsement(). This is what lets profprep-data's
+// get_practice_questions/save_questions/track_question, and profprep-claude's generate/chat/
+// seed_questions actions, actually reach real, endorsement-specific question_bank content.
 function switchEndorsement(endorsementKey, btn) {
   currentEndorsement = endorsementKey;
+  EXAM_TYPE = endorsementKey;
   document.querySelectorAll('.cdl-tab').forEach(b => {
     b.style.background = '#fff'; b.style.color = '#333'; b.style.borderColor = '#ccc';
   });
